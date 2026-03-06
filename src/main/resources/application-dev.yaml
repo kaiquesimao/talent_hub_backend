@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/talent_hub}
+    username: ${DB_USERNAME:talent_user}
+    password: ${DB_PASSWORD:talent_pass}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  docker:
+    compose:
+      enabled: true
+      file: ./compose.yaml
+
+logging:
+  level:
+    org.hibernate.SQL: warn
+    org.flywaydb: info

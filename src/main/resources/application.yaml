@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: talent_hub
+  profiles:
+    default: dev
+
+server:
+  port: 8080
