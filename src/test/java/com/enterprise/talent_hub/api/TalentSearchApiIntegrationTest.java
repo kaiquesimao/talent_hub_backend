@@ -25,8 +25,8 @@ import com.enterprise.talent_hub.repository.SkillRepository;
 @Testcontainers(disabledWithoutDocker = true)
 class TalentSearchApiIntegrationTest {
 
-	private static final String ANA_SOUZA_NAME = "Ana Souza";
-	private static final String ANA_SOUZA_EMAIL = "ana.souza@talenthub.internal";
+	private static final String KAIQUE_SIMAO_NAME = "Kaique Simão";
+	private static final String KAIQUE_SIMAO_EMAIL = "kaique.simao@talenthub.com";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -63,7 +63,7 @@ class TalentSearchApiIntegrationTest {
 				.andExpect(jsonPath("$.page").value(0))
 				.andExpect(jsonPath("$.size").value(12))
 				.andExpect(jsonPath("$.totalElements").value(greaterThanOrEqualTo(4)))
-				.andExpect(jsonPath("$.content[0].name").value(ANA_SOUZA_NAME));
+				.andExpect(jsonPath("$.content[0].name").value(KAIQUE_SIMAO_NAME));
 	}
 
 	@Test
@@ -86,20 +86,20 @@ class TalentSearchApiIntegrationTest {
 				.param("proficiencyLevel", "EXPERT"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.totalElements").value(1))
-				.andExpect(jsonPath("$.content[0].name").value(ANA_SOUZA_NAME));
+				.andExpect(jsonPath("$.content[0].name").value(KAIQUE_SIMAO_NAME));
 	}
 
 	@Test
 	void findEmployeeProfileReturnsDetailedPayload() throws Exception {
 		Long anaId = employeeRepository.findAll().stream()
-				.filter(employee -> ANA_SOUZA_EMAIL.equals(employee.getEmail()))
+				.filter(employee -> KAIQUE_SIMAO_EMAIL.equals(employee.getEmail()))
 				.findFirst()
 				.orElseThrow()
 				.getId();
 
 		mockMvc.perform(get("/api/v1/employees/{id}", anaId))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.name").value(ANA_SOUZA_NAME))
+				.andExpect(jsonPath("$.name").value(KAIQUE_SIMAO_NAME))
 				.andExpect(jsonPath("$.country.isoCode").value("BR"))
 				.andExpect(jsonPath("$.skills.length()").value(greaterThanOrEqualTo(3)))
 				.andExpect(jsonPath("$.skills[0].skillName").value("English"));
