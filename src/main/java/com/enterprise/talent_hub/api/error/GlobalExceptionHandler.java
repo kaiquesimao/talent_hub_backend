@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.enterprise.talent_hub.service.exception.InvalidCredentialsException;
 import com.enterprise.talent_hub.service.exception.ResourceNotFoundException;
 
 import jakarta.validation.ConstraintViolationException;
@@ -22,6 +23,11 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ProblemDetail handleNotFound(ResourceNotFoundException ex) {
 		return buildProblem(HttpStatus.NOT_FOUND, "Resource not found", ex.getMessage());
+	}
+
+	@ExceptionHandler(InvalidCredentialsException.class)
+	public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
+		return buildProblem(HttpStatus.UNAUTHORIZED, "Authentication failed", ex.getMessage());
 	}
 
 	@ExceptionHandler({

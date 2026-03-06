@@ -22,4 +22,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	@EntityGraph(attributePaths = { "country", "employeeSkills", "employeeSkills.skill" })
 	@Query("select e from Employee e where e.id = :id")
 	Optional<Employee> findDetailedById(@Param("id") Long id);
+
+	Optional<Employee> findByEmailIgnoreCase(String email);
+
+	boolean existsByEmailIgnoreCase(String email);
 }

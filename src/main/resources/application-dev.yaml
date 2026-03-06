@@ -18,6 +18,15 @@ spring:
       enabled: true
       file: ./compose.yaml
 
+app:
+  security:
+    demo:
+      email: ${APP_SECURITY_DEMO_EMAIL:ana.souza@talenthub.internal}
+      password: ${APP_SECURITY_DEMO_PASSWORD:TalentHub@123}
+    jwt:
+      secret: ${APP_SECURITY_JWT_SECRET:talent-hub-local-dev-secret-key-with-32chars}
+      ttl: ${APP_SECURITY_JWT_TTL:8h}
+
 logging:
   level:
     org.hibernate.SQL: warn
