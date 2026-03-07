@@ -17,12 +17,13 @@ public final class EmployeeSpecifications {
 	}
 
 	public static Specification<Employee> withFilters(
-		String query,
+			Long companyId,
+				String query,
 		Long countryId,
 		Long skillId,
 		ProficiencyLevel proficiencyLevel
 	) {
-		Specification<Employee> specification = Specification.where(distinct());
+		Specification<Employee> specification = Specification.where(distinct()).and(hasCompanyId(companyId));
 
 		if (hasText(query)) {
 			specification = specification.and(textSearch(query));
@@ -57,6 +58,11 @@ public final class EmployeeSpecifications {
 				criteriaBuilder.like(criteriaBuilder.lower(root.get("role")), wildcard)
 			);
 		};
+	}
+
+	private static Specification<Employee> hasCompanyId(Long companyId) {
+		return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder
+				.equal(root.join("company", JoinType.INNER).get("id"), companyId);
 	}
 
 	private static Specification<Employee> hasCountryId(Long countryId) {

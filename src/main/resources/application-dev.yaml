@@ -23,6 +23,9 @@ app:
     demo:
       email: ${APP_SECURITY_DEMO_EMAIL:kaique.simao@talenthub.com}
       password: ${APP_SECURITY_DEMO_PASSWORD:TalentHub@123}
+    invite:
+      ttl: ${APP_SECURITY_INVITE_TTL:7d}
+      accept-url-base: ${APP_SECURITY_INVITE_ACCEPT_URL_BASE:http://localhost:3000/accept-invite}
     jwt:
       secret: ${APP_SECURITY_JWT_SECRET:talent-hub-local-dev-secret-key-with-32chars}
       ttl: ${APP_SECURITY_JWT_TTL:8h}

@@ -1,18 +1,17 @@
 package com.enterprise.talent_hub.domain;
 
 import java.time.OffsetDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -27,21 +26,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "employees")
-public class Employee {
+@Table(name = "company_invites")
+public class CompanyInvite {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-	@Column(nullable = false, length = 180)
-	private String name;
-
-	@Column(nullable = false, length = 180)
-	private String email;
-
-	@Column(nullable = false, length = 120)
-	private String role;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "company_id", nullable = false)
@@ -50,28 +40,47 @@ public class Employee {
 	private Company company;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "invited_by_user_id", nullable = false)
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	private AppUser user;
+	private AppUser invitedBy;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "country_id", nullable = false)
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private Country country;
 
+	@Column(nullable = false, length = 180)
+	private String email;
+
+	@Column(name = "full_name", nullable = false, length = 180)
+	private String fullName;
+
+	@Column(name = "employee_role", nullable = false, length = 120)
+	private String employeeRole;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "membership_role", nullable = false, length = 40)
+	private MembershipRole membershipRole;
+
+	@Column(nullable = false, length = 120, unique = true)
+	private String token;
+
+	@Column(name = "expires_at", nullable = false)
+	private OffsetDateTime expiresAt;
+
+	@Column(name = "accepted_at")
+	private OffsetDateTime acceptedAt;
+
 	@Column(name = "created_at", nullable = false)
 	private OffsetDateTime createdAt;
 
-	@Builder.Default
-	@OneToMany(mappedBy = "employee")
-	@ToString.Exclude
-	@EqualsAndHashCode.Exclude
-	private Set<EmployeeSkill> employeeSkills = new LinkedHashSet<>();
-
 	@PrePersist
 	void onCreate() {
+		if (membershipRole == null) {
+			membershipRole = MembershipRole.EMPLOYEE_SELF_SERVICE;
+		}
 		if (createdAt == null) {
 			createdAt = OffsetDateTime.now();
 		}

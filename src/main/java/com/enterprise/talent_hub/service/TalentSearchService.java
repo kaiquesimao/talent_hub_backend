@@ -19,10 +19,13 @@ import com.enterprise.talent_hub.api.mapper.CountryMapper;
 import com.enterprise.talent_hub.api.mapper.EmployeeMapper;
 import com.enterprise.talent_hub.api.mapper.SkillMapper;
 import com.enterprise.talent_hub.domain.Employee;
+import com.enterprise.talent_hub.domain.Permission;
 import com.enterprise.talent_hub.domain.ProficiencyLevel;
 import com.enterprise.talent_hub.repository.CountryRepository;
 import com.enterprise.talent_hub.repository.EmployeeRepository;
 import com.enterprise.talent_hub.repository.SkillRepository;
+import com.enterprise.talent_hub.service.auth.AuthenticatedCompanyContext;
+import com.enterprise.talent_hub.service.auth.CurrentTenantService;
 import com.enterprise.talent_hub.service.exception.ResourceNotFoundException;
 import com.enterprise.talent_hub.service.specification.EmployeeSpecifications;
 
@@ -39,6 +42,7 @@ public class TalentSearchService {
 	private final CountryMapper countryMapper;
 	private final SkillMapper skillMapper;
 	private final EmployeeMapper employeeMapper;
+	private final CurrentTenantService currentTenantService;
 
 	public List<CountryDto> listCountries() {
 		return countryMapper.toDto(countryRepository.findAllByOrderByNameAsc());
@@ -56,8 +60,11 @@ public class TalentSearchService {
 		int page,
 		int size
 	) {
+		AuthenticatedCompanyContext context = currentTenantService.requireContext();
+		currentTenantService.requirePermission(Permission.EMPLOYEES_READ);
 		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
-		Specification<Employee> specification = EmployeeSpecifications.withFilters(query, countryId, skillId, proficiencyLevel);
+		Specification<Employee> specification = EmployeeSpecifications.withFilters(context.companyId(), query,
+				countryId, skillId, proficiencyLevel);
 		Page<Employee> resultPage = employeeRepository.findAll(specification, pageable);
 
 		List<EmployeeSummaryDto> summaries = resultPage.stream()
@@ -76,7 +83,9 @@ public class TalentSearchService {
 	}
 
 	public EmployeeProfileDto findEmployeeProfile(Long id) {
-		Employee employee = employeeRepository.findDetailedById(id)
+		AuthenticatedCompanyContext context = currentTenantService.requireContext();
+		currentTenantService.requirePermission(Permission.EMPLOYEES_READ);
+		Employee employee = employeeRepository.findDetailedById(id, context.companyId())
 			.orElseThrow(() -> new ResourceNotFoundException("Employee with id %d was not found".formatted(id)));
 
 		return employeeMapper.toProfile(employee);

@@ -6,12 +6,11 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -27,8 +26,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "employees")
-public class Employee {
+@Table(name = "users")
+public class AppUser {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,41 +36,39 @@ public class Employee {
 	@Column(nullable = false, length = 180)
 	private String name;
 
-	@Column(nullable = false, length = 180)
+	@Column(nullable = false, length = 180, unique = true)
 	private String email;
 
-	@Column(nullable = false, length = 120)
-	private String role;
+	@Column(name = "password_hash", nullable = false, length = 255)
+	private String passwordHash;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "company_id", nullable = false)
-	@ToString.Exclude
-	@EqualsAndHashCode.Exclude
-	private Company company;
-
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
-	@ToString.Exclude
-	@EqualsAndHashCode.Exclude
-	private AppUser user;
-
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "country_id", nullable = false)
-	@ToString.Exclude
-	@EqualsAndHashCode.Exclude
-	private Country country;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 20)
+	private UserStatus status;
 
 	@Column(name = "created_at", nullable = false)
 	private OffsetDateTime createdAt;
 
+	@Column(name = "last_login_at")
+	private OffsetDateTime lastLoginAt;
+
 	@Builder.Default
-	@OneToMany(mappedBy = "employee")
+	@OneToMany(mappedBy = "user")
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	private Set<EmployeeSkill> employeeSkills = new LinkedHashSet<>();
+	private Set<CompanyMembership> memberships = new LinkedHashSet<>();
+
+	@Builder.Default
+	@OneToMany(mappedBy = "user")
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
+	private Set<Employee> employees = new LinkedHashSet<>();
 
 	@PrePersist
 	void onCreate() {
+		if (status == null) {
+			status = UserStatus.ACTIVE;
+		}
 		if (createdAt == null) {
 			createdAt = OffsetDateTime.now();
 		}

@@ -21,6 +21,9 @@ public class AppSecurityProperties {
 	@Valid
 	private Jwt jwt = new Jwt();
 
+	@Valid
+	private Invite invite = new Invite();
+
 	public Demo getDemo() {
 		return demo;
 	}
@@ -35,6 +38,14 @@ public class AppSecurityProperties {
 
 	public void setJwt(Jwt jwt) {
 		this.jwt = jwt;
+	}
+
+	public Invite getInvite() {
+		return invite;
+	}
+
+	public void setInvite(Invite invite) {
+		this.invite = invite;
 	}
 
 	@Validated
@@ -89,6 +100,32 @@ public class AppSecurityProperties {
 
 		public void setTtl(Duration ttl) {
 			this.ttl = ttl;
+		}
+	}
+
+	@Validated
+	public static class Invite {
+
+		@NotNull
+		private Duration ttl = Duration.ofDays(7);
+
+		@NotBlank
+		private String acceptUrlBase = "http://localhost:3000/accept-invite";
+
+		public Duration getTtl() {
+			return ttl;
+		}
+
+		public void setTtl(Duration ttl) {
+			this.ttl = ttl;
+		}
+
+		public String getAcceptUrlBase() {
+			return acceptUrlBase;
+		}
+
+		public void setAcceptUrlBase(String acceptUrlBase) {
+			this.acceptUrlBase = acceptUrlBase;
 		}
 	}
 }

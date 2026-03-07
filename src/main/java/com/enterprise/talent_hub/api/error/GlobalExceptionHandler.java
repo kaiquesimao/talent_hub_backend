@@ -6,13 +6,16 @@ import java.time.OffsetDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.enterprise.talent_hub.service.exception.ConflictException;
 import com.enterprise.talent_hub.service.exception.InvalidCredentialsException;
+import com.enterprise.talent_hub.service.exception.InvalidInviteException;
 import com.enterprise.talent_hub.service.exception.ResourceNotFoundException;
 
 import jakarta.validation.ConstraintViolationException;
@@ -28,6 +31,16 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(InvalidCredentialsException.class)
 	public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
 		return buildProblem(HttpStatus.UNAUTHORIZED, "Authentication failed", ex.getMessage());
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ProblemDetail handleAccessDenied(AccessDeniedException ex) {
+		return buildProblem(HttpStatus.FORBIDDEN, "Access denied", ex.getMessage());
+	}
+
+	@ExceptionHandler({ ConflictException.class, InvalidInviteException.class })
+	public ProblemDetail handleConflict(RuntimeException ex) {
+		return buildProblem(HttpStatus.CONFLICT, "Conflict", ex.getMessage());
 	}
 
 	@ExceptionHandler({
