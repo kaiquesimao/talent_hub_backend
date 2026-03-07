@@ -114,6 +114,18 @@ public class CompanyAccessService {
 	}
 
 	@Transactional
+	public CompanyInviteResponseDto cancelInvite(Long inviteId) {
+		AuthenticatedCompanyContext context = currentTenantService.requireContext();
+		currentTenantService.requirePermission(Permission.USERS_CREATE);
+		CompanyInvite invite = companyInviteRepository
+				.findByCompanyIdAndIdAndAcceptedAtIsNull(context.companyId(), inviteId)
+				.orElseThrow(
+						() -> new ResourceNotFoundException("Invite with id %d was not found".formatted(inviteId)));
+		companyInviteRepository.delete(invite);
+		return toInviteDto(invite);
+	}
+
+	@Transactional
 	public CompanyMembershipSummaryDto updateMembership(Long membershipId, CompanyMembershipUpdateRequestDto request) {
 		AuthenticatedCompanyContext context = currentTenantService.requireContext();
 		currentTenantService.requirePermission(Permission.USERS_UPDATE);

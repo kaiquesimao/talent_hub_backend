@@ -25,6 +25,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	@Query("select e from Employee e where e.id = :id and e.company.id = :companyId")
 	Optional<Employee> findDetailedById(@Param("id") Long id, @Param("companyId") Long companyId);
 
+	@EntityGraph(attributePaths = { "country", "employeeSkills", "employeeSkills.skill" })
+	@Query("select e from Employee e where e.company.id = :companyId and e.user.id = :userId")
+	Optional<Employee> findDetailedByCompanyIdAndUserId(@Param("companyId") Long companyId,
+			@Param("userId") Long userId);
+
 	List<Employee> findByCompanyIdAndUserIdIn(Long companyId, Collection<Long> userIds);
 
 	Optional<Employee> findByCompanyIdAndUserId(Long companyId, Long userId);

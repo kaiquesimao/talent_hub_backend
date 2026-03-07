@@ -2,6 +2,7 @@ package com.enterprise.talent_hub.api.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +40,11 @@ public class CompanyAccessController {
 	@PostMapping("/invites")
 	public CompanyInviteResponseDto createInvite(@Valid @RequestBody CompanyInviteRequestDto request) {
 		return companyAccessService.createInvite(request);
+	}
+
+	@DeleteMapping("/invites/{inviteId}")
+	public CompanyInviteResponseDto cancelInvite(@PathVariable Long inviteId) {
+		return companyAccessService.cancelInvite(inviteId);
 	}
 
 	@PatchMapping("/memberships/{membershipId}")

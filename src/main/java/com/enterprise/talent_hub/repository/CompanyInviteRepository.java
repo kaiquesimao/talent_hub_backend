@@ -21,6 +21,9 @@ public interface CompanyInviteRepository extends JpaRepository<CompanyInvite, Lo
 	@EntityGraph(attributePaths = { "company", "country", "invitedBy" })
 	Optional<CompanyInvite> findByTokenAndAcceptedAtIsNullAndExpiresAtAfter(String token, OffsetDateTime now);
 
+	@EntityGraph(attributePaths = { "company", "country", "invitedBy" })
+	Optional<CompanyInvite> findByCompanyIdAndIdAndAcceptedAtIsNull(Long companyId, Long id);
+
 	boolean existsByCompanyIdAndEmailIgnoreCaseAndAcceptedAtIsNullAndExpiresAtAfter(Long companyId, String email,
 			OffsetDateTime now);
 }
